@@ -6,27 +6,22 @@ package com.co.poligran.polirestaurante.BackEnd;
 
 /**
  *
- * @author salaG201
+ * @author Stuve
  */
-public class Administrador extends Usuario {
+public class Cocina extends Usuario{
     
-    public Administrador(int id, String nombre, String correo, String password, String rol) {
+    public Cocina(int id, String nombre, String correo, String password, String rol) {
         super(id, nombre, correo, password, rol);
     }
-    public void gestionarProductos(){
-        
-    }
     
-    public void gestionarCategorias(){
+    public void verPedidoPendiente(){
         
     }
-    public void gestionarMesas(){
+    public void prepararPedido(){
         
     }
-    public void gestionarUsuarios(){
-        
-    }
-    public void gestionarReporte(){
+    public void cambiarEstado(){
         
     }
 }
+
