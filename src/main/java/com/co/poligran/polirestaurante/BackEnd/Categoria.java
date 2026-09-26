@@ -50,12 +50,5 @@ public class Categoria {
 
     public ArrayList<Producto> getProductos() {
         return productos;
-    }
-    
-    
-    
-
-    
-    
-    
+    }   
 }

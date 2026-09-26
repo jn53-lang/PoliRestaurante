@@ -10,7 +10,7 @@ package com.co.poligran.polirestaurante.BackEnd;
  */
 public class Cocina extends Usuario{
     
-    public Cocina(int id, String nombre, String correo, String password, String rol) {
+    public Cocina(int id, String nombre, String correo, String password) {
         super(id, nombre, correo, password, "Cocina");
     }
     

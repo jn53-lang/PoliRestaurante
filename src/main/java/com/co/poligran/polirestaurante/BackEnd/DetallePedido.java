@@ -15,17 +15,16 @@ public class DetallePedido {
     private double subtotal;
     private Producto producto;
 
-    public DetallePedido(int id, int cantidad, double precioUnitario, double subtotal) {
+    public DetallePedido(int id, Producto producto, int cantidad) {
         this.id = id;
+        this.producto = producto;
         this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.subtotal = subtotal;
+        this.precioUnitario = producto.getPrecio();
         calcularSubtotal();
     }
     
-    public void cancelarSubtotal(){
+    public void calcularSubtotal(){
         subtotal = cantidad * precioUnitario;
-        return subtotal;
     }
 
     public int getId() {
@@ -52,6 +51,4 @@ public class DetallePedido {
         this.cantidad = cantidad;
         calcularSubtotal();
     }
-    
-    
 }

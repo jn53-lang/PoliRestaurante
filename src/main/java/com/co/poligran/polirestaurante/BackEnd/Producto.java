@@ -58,5 +58,9 @@ public void actualizarPrecio(double nuevoPrecio) {
         return categoria;
     }
 
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
     
 }

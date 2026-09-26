@@ -10,7 +10,7 @@ package com.co.poligran.polirestaurante.BackEnd;
  */
 public class Mesero extends Usuario{
     
-    public Mesero(int id, String nombre, String correo, String password, String rol) {
+    public Mesero(int id, String nombre, String correo, String password) {
         super(id, nombre, correo, password, "Mesero");
     }
     

@@ -5,13 +5,14 @@
 package com.co.poligran.polirestaurante.BackEnd;
 
 import java.util.Date;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  *
  * @author salaG201
  */
-private int id;
+public class Pedido {
+    private int id;
     private Date fecha;
     private String estado;
     private double total;

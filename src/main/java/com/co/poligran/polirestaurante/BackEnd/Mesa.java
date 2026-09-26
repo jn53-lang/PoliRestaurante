@@ -11,7 +11,7 @@ public class Mesa {
     int capacidad;
     String estado;
 
-    public Mesa(int id, int numero, int capacidad, String estado) {
+    public Mesa(int id, int numero, int capacidad) {
         this.id = id;
         this.numero = numero;
         this.capacidad = capacidad;
