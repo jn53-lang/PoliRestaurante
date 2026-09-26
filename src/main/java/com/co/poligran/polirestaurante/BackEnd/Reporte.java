@@ -11,10 +11,10 @@ import java.util.Date;
  * @author Stuve
  */
 public class Reporte {
-    int id;
-    Date fechaInicio;
-    Date fechaFin;
-    String tipo;
+    private int id;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private String tipo;
 
     public Reporte(int id, Date fechaInicio, Date fechaFin, String tipo) {
         this.id = id;
@@ -22,8 +22,28 @@ public class Reporte {
         this.fechaFin = fechaFin;
         this.tipo = tipo;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+    
     
     public void generarReporte(){
-    
+        System.out.println("Reporte #" + id);
+        System.out.println("Tipo: " + tipo);
+        System.out.println("Desde: " + fechaInicio);
+        System.out.println("Hasta: " + fechaFin);
     }
 }

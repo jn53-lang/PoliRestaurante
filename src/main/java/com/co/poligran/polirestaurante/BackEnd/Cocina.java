@@ -11,17 +11,20 @@ package com.co.poligran.polirestaurante.BackEnd;
 public class Cocina extends Usuario{
     
     public Cocina(int id, String nombre, String correo, String password, String rol) {
-        super(id, nombre, correo, password, rol);
+        super(id, nombre, correo, password, "Cocina");
     }
     
     public void verPedidoPendiente(){
-        
+        System.out.println("Cocina consultando pedidos pendientes..."); 
     }
-    public void prepararPedido(){
-        
-    }
-    public void cambiarEstado(){
-        
+    public void prepararPedido(Pedido pedido){
+        pedido.cambiarEstado(" Preparando. ");
+        System.out.println("Pedido #" + pedido.getId() + " en preparación.");
+    }    
+    
+    public void cambiarEstado(Pedido pedido, String nuevoEstado){
+                pedido.cambiarEstado(nuevoEstado);
+
     }
 }
 

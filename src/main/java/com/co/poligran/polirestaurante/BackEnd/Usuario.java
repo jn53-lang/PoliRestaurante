@@ -9,11 +9,11 @@ package com.co.poligran.polirestaurante.BackEnd;
  * @author salaG201
  */
 public class Usuario {
-    int id;
-    String nombre;
-    String correo;
-    String password;
-    String rol;
+    private int id;
+    private String nombre;
+    private String correo;
+    private String password;
+    private String rol;
 
     public Usuario(int id, String nombre, String correo, String password, String rol) {
         this.id = id;
@@ -56,10 +56,10 @@ public class Usuario {
     }
     
     public void iniciarSesion(){
-        
+        System.out.println(nombre + " ha iniciado sesión.");
     }
     public void cerrarSesion(){
-        
+        System.out.println(nombre + " ha cerrado sesión.");
     }
     
     
