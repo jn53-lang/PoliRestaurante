@@ -1,5 +1,5 @@
 
-package com.co.poligran.polirestaurante.BackEnd;
+package com.co.poligran.polirestaurante.Entityes;
 
 
 public class Administrador extends Usuario {
