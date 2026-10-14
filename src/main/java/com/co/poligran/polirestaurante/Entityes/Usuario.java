@@ -62,5 +62,8 @@ public class Usuario {
         System.out.println(nombre + " ha cerrado sesión.");
     }
     
+    public String getRol() {
+    return rol;
+}
     
 }

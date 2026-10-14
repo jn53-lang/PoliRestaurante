@@ -34,10 +34,22 @@ public class Pedido {
 
         if (mesa != null) {
             mesa.asignarMesa();
+            
         }
 
         registrarEstado();
     }
+    
+public Pedido(int id, Date fecha, String estado, double total, Mesero mesero, Mesa mesa) {
+    this.id = id;
+    this.fecha = fecha;
+    this.estado = estado;
+    this.total = total;
+    this.mesero = mesero;
+    this.mesa = mesa;
+    this.detalles = new ArrayList<>();
+    this.historial = new ArrayList<>();
+}
 
     public void crearPedido() {
         System.out.println("Pedido #" + id + " creado.");
