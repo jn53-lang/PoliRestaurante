@@ -24,6 +24,10 @@ public class Producto {
         this.disponible = disponible;
     }
 
+    public Producto(int aInt, String string, double aDouble) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 public void actualizarPrecio(double nuevoPrecio) {
         if (nuevoPrecio >= 0) {
             this.precio = nuevoPrecio;
