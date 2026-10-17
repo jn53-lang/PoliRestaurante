@@ -70,7 +70,8 @@ public Pedido(int id, Date fecha, String estado, double total, Mesero mesero, Me
 
     public void quitarProducto(Producto producto) {
         for (int i = 0; i < detalles.size(); i++) {
-            if (detalles.get(i).getProducto() == producto) {
+            if (producto != null
+                    && detalles.get(i).getProducto().getId() == producto.getId()) {
                 detalles.remove(i);
                 calcularTotal();
                 System.out.println("Producto eliminado del pedido.");
@@ -81,7 +82,7 @@ public Pedido(int id, Date fecha, String estado, double total, Mesero mesero, Me
     }
 
     public void cambiarEstado(String nuevoEstado) {
-        if (!estadoValido(nuevoEstado)) {
+        if (nuevoEstado == null || !estadoValido(nuevoEstado)) {
             System.out.println("Estado no válido.");
             return;
         }
@@ -93,6 +94,11 @@ public Pedido(int id, Date fecha, String estado, double total, Mesero mesero, Me
 
         estado = nuevoEstado;
         registrarEstado();
+
+        // Al terminar el pedido, la mesa vuelve a quedar disponible.
+        if (mesa != null && (estado.equals("ENTREGADO") || estado.equals("CANCELADO"))) {
+            mesa.liberarMesa();
+        }
         System.out.println("Pedido #" + id + " -> " + estado);
     }
 

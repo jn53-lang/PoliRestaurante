@@ -18,10 +18,15 @@ public class Cocina extends Usuario{
         System.out.println("Cocina consultando pedidos pendientes..."); 
     }
     public void prepararPedido(Pedido pedido){
-        pedido.cambiarEstado(" Preparando. ");
+        pedido.cambiarEstado("EN_PREPARACION");
         System.out.println("Pedido #" + pedido.getId() + " en preparación.");
     }    
     
+    public void marcarListo(Pedido pedido) {
+        pedido.cambiarEstado("LISTO");
+        System.out.println("Pedido #" + pedido.getId() + " listo para entregar.");
+    }
+
     public void cambiarEstado(Pedido pedido, String nuevoEstado){
                 pedido.cambiarEstado(nuevoEstado);
 

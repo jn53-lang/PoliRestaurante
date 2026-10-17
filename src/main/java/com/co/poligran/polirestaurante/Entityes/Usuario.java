@@ -63,7 +63,12 @@ public class Usuario {
     }
     
     public String getRol() {
-    return rol;
-}
+        return rol;
+    }
+
+    @Override
+    public String toString() {
+        return rol + ": " + nombre + " (" + correo + ")";
+    }
     
 }
