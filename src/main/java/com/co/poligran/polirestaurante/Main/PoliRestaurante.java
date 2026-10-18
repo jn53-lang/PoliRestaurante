@@ -1,63 +1,52 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.co.poligran.polirestaurante.Main;
 
+import com.co.poligran.polirestaurante.BackEnd.AdminManager;
+import com.co.poligran.polirestaurante.BackEnd.PedidoManager;
 import com.co.poligran.polirestaurante.Entityes.Administrador;
-import com.co.poligran.polirestaurante.Entityes.Categoria;
 import com.co.poligran.polirestaurante.Entityes.Cocina;
-import com.co.poligran.polirestaurante.Entityes.Mesa;
 import com.co.poligran.polirestaurante.Entityes.Mesero;
-import com.co.poligran.polirestaurante.Entityes.Pedido;
-import com.co.poligran.polirestaurante.Entityes.Producto;
-import com.co.poligran.polirestaurante.Entityes.Reporte;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
-import java.util.Scanner;
-import java.util.Date;
+import com.co.poligran.polirestaurante.Front.PantallaAcceso;
+import com.co.poligran.polirestaurante.Front.PantallaAdmin;
+import com.co.poligran.polirestaurante.Front.PantallaPedidos;
 
 public class PoliRestaurante {
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        Usuario admin = new Usuario(10913674, " Juan ", "Juanadm@gmail.com", "Admin123", "Administrador");
-        System.out.println(admin);
+
+        // 1. Se crean los dos Managers (cada uno prepara la base de datos si hace falta).
+        AdminManager adminManager = new AdminManager();
+        PedidoManager pedidoManager = new PedidoManager();
+
+        // 2. Se crean las pantallas que usan esos Managers.
+        PantallaAcceso acceso = new PantallaAcceso(adminManager);
+        PantallaPedidos pantallaPedidos = new PantallaPedidos(pedidoManager, adminManager);
+
         System.out.println("Bienvenido al Poli Restaurante");
-        System.out.println("Si es usuario frecuente recomandamos que inicie sesion, si no tiene una, creela");
-        System.out.println("--------------------------------------------------------------------------------");
-        System.out.println();
-        System.out.println("Digite 1 para iniciar sesion");
-        System.out.println("Digite 2 para crear usuario");
-            int login = sc.nextInt(); 
-        
-        switch (login){
-        case 1 -> {
-            System.out.println(" Ingrese su usuario: ");
-            String usuario = sc.next();
-            System.out.println(" Ingrese su contraseña: ");
-            String password = sc.next();
-            System.out.println(" Bienvenido: "+usuario);
-            }
-        case 2 -> {
-            System.out.println(" Registre su usuario: ");
-            String usuario = sc.next();
-            System.out.println(" Registre su contraseña: ");
-            String password = sc.next();
-            System.out.println(" Confirme su contraseña: ");
-            String password2 = sc.next();
-            while (password2 != password){
-                System.out.println(" Las contraseñas no coinciden");
-                System.out.println(" Digite nuevamente la contraseña ");
-                String password3 = sc.next();
-                if (password3 == password){
-                                                break;
+        System.out.println("--------------------------------------------------");
 
+        // 3. Mientras alguien inicie sesion, se le muestra el menu de su rol.
+        while (true) {
+            Usuario usuario = acceso.iniciar();
+
+            if (usuario == null) {
+                break;   // eligio salir
             }
+
+            // Polimorfismo: el tipo de objeto decide que menu se abre.
+            if (usuario instanceof Administrador) {
+                new PantallaAdmin(adminManager, pantallaPedidos, usuario).mostrarMenu();
+            } else if (usuario instanceof Mesero) {
+                pantallaPedidos.menuMesero(usuario);
+            } else if (usuario instanceof Cocina) {
+                pantallaPedidos.menuCocina();
+            } else {
+                System.out.println("Este usuario no tiene un rol valido.");
+            }
+
+            adminManager.cerrarSesion(usuario);
         }
 
-        }
-    }
+        System.out.println("Hasta pronto.");
     }
 }
-
-
