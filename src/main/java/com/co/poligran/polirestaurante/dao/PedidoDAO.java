@@ -27,10 +27,7 @@ import java.util.List;
 
 public class PedidoDAO {
 
-    // =========================================================
-    // CREAR TABLAS
-    // =========================================================
-
+    // Crea las tablas necesarias para guardar pedidos, detalles e historial.
     public void crearTablas() throws SQLException {
 
         String tablaPedido = """
@@ -69,6 +66,7 @@ public class PedidoDAO {
             )
             """;
 
+        // Usa una misma conexion para crear las tres tablas.
         try (Connection conexion = Conexion.conectar()) {
 
             try (PreparedStatement ps =
@@ -88,18 +86,17 @@ public class PedidoDAO {
         }
     }
 
-    // =========================================================
-    // GUARDAR PEDIDO, DETALLES E HISTORIAL
-    // =========================================================
-
+    // Guarda el pedido junto con sus detalles y su historial inicial.
     public boolean guardar(Pedido pedido) throws SQLException {
 
+        // Verifica que el objeto recibido exista.
         if (pedido == null) {
             throw new IllegalArgumentException(
                     "El pedido no puede ser null."
             );
         }
 
+        // Comprueba que el pedido tenga los datos obligatorios.
         if (pedido.getFecha() == null
                 || pedido.getMesero() == null
                 || pedido.getMesa() == null) {
@@ -129,11 +126,12 @@ public class PedidoDAO {
 
         try (Connection conexion = Conexion.conectar()) {
 
+            // Inicia una transaccion para guardar todo como una sola operacion.
             conexion.setAutoCommit(false);
 
             try {
 
-                // Guardar pedido.
+                // Guarda los datos generales del pedido.
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sqlPedido)) {
 
@@ -150,7 +148,7 @@ public class PedidoDAO {
                     ps.executeUpdate();
                 }
 
-                // La mesa queda ocupada mientras el pedido siga activo.
+                // Marca la mesa como ocupada si el pedido sigue activo.
                 if (!pedido.getEstado().equals("ENTREGADO")
                         && !pedido.getEstado().equals("CANCELADO")) {
                     try (PreparedStatement ps = conexion.prepareStatement(
@@ -161,12 +159,14 @@ public class PedidoDAO {
                     }
                 }
 
-                // Guardar detalles respetando precio y subtotal.
+                // Guarda los productos incluidos en el pedido.
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sqlDetalle)) {
 
+                    // Recorre cada detalle asociado al pedido.
                     for (DetallePedido detalle : pedido.getDetalles()) {
 
+                        // Impide guardar un detalle sin producto.
                         if (detalle.getProducto() == null) {
                             throw new SQLException(
                                     "Hay un detalle sin producto."
@@ -185,13 +185,15 @@ public class PedidoDAO {
                         );
                         ps.setDouble(5, detalle.getSubtotal());
 
+                        // Agrega la insercion al lote para ejecutarla despues.
                         ps.addBatch();
                     }
 
+                    // Inserta todos los detalles acumulados.
                     ps.executeBatch();
                 }
 
-                // Guardar historial con las fechas reales.
+                // Guarda los cambios de estado que trae el pedido.
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sqlHistorial)) {
 
@@ -210,27 +212,28 @@ public class PedidoDAO {
                         ps.addBatch();
                     }
 
+                    // Registra los elementos del historial en un solo lote.
                     ps.executeBatch();
                 }
 
+                // Confirma los cambios cuando todas las operaciones funcionan.
                 conexion.commit();
                 return true;
 
             } catch (SQLException | RuntimeException e) {
 
+                // Revierte los cambios si ocurre un error.
                 conexion.rollback();
                 throw e;
 
             } finally {
+                // Restaura el comportamiento normal de la conexion.
                 conexion.setAutoCommit(true);
             }
         }
     }
 
-    // =========================================================
-    // COMPROBAR SI EXISTE UN PEDIDO
-    // =========================================================
-
+    // Comprueba si existe un pedido con el ID indicado.
     public boolean existe(int id) throws SQLException {
 
         String sql = "SELECT id FROM pedido WHERE id = ?";
@@ -241,15 +244,13 @@ public class PedidoDAO {
             ps.setInt(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
+                // Si hay una fila, el pedido existe.
                 return rs.next();
             }
         }
     }
 
-    // =========================================================
-    // BUSCAR PEDIDO POR ID
-    // =========================================================
-
+    // Busca un pedido por su ID.
     public Pedido buscarPorId(int id) throws SQLException {
 
         String sql = "SELECT * FROM pedido WHERE id = ?";
@@ -261,19 +262,18 @@ public class PedidoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
 
+                // Convierte el registro encontrado en un objeto Pedido.
                 if (rs.next()) {
                     return convertirPedido(rs);
                 }
             }
         }
 
+        // Devuelve null si no encuentra el pedido.
         return null;
     }
 
-    // =========================================================
-    // LISTAR TODOS LOS PEDIDOS
-    // =========================================================
-
+    // Consulta todos los pedidos y los organiza por ID.
     public List<Pedido> listarTodos() throws SQLException {
 
         List<Pedido> pedidos = new ArrayList<>();
@@ -284,6 +284,7 @@ public class PedidoDAO {
              PreparedStatement ps = conexion.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
+            // Convierte cada registro y lo agrega a la lista.
             while (rs.next()) {
                 pedidos.add(convertirPedido(rs));
             }
@@ -292,22 +293,21 @@ public class PedidoDAO {
         return pedidos;
     }
 
-    // =========================================================
-    // CONVERTIR REGISTRO DE SQLITE EN OBJETO PEDIDO
-    // =========================================================
-
+    // Convierte un registro de la base de datos en un objeto Pedido completo.
     private Pedido convertirPedido(ResultSet rs) throws SQLException {
 
         int id = rs.getInt("id");
         int idMesero = rs.getInt("mesero_id");
         int idMesa = rs.getInt("mesa_id");
 
+        // Usa los DAO correspondientes para recuperar el mesero y la mesa.
         UsuarioDAO usuarioDAO = new UsuarioDAO();
         MesaDAO mesaDAO = new MesaDAO();
 
         Usuario usuario = usuarioDAO.buscarPorId(idMesero);
         Mesa mesa = mesaDAO.buscarPorId(idMesa);
 
+        // Informa si el usuario asociado no existe.
         if (usuario == null) {
             throw new SQLException(
                     "No se encontró el usuario/mesero con ID "
@@ -315,6 +315,7 @@ public class PedidoDAO {
             );
         }
 
+        // Informa si la mesa asociada no existe.
         if (mesa == null) {
             throw new SQLException(
                     "No se encontró la mesa con ID "
@@ -322,6 +323,7 @@ public class PedidoDAO {
             );
         }
 
+        // Crea el objeto Mesero con los datos recuperados del usuario.
         Mesero mesero = new Mesero(
                 usuario.getId(),
                 usuario.getNombre(),
@@ -329,8 +331,10 @@ public class PedidoDAO {
                 usuario.getPassword()
         );
 
+        // Convierte la fecha almacenada en la base de datos.
         Date fecha = convertirFecha(rs.getString("fecha"));
 
+        // Construye el pedido con sus datos principales.
         Pedido pedido = new Pedido(
                 id,
                 fecha,
@@ -340,21 +344,19 @@ public class PedidoDAO {
                 mesa
         );
 
-        // Cargar los detalles reales del pedido.
+        // Carga los productos y cantidades asociados al pedido.
         pedido.getDetalles().addAll(listarDetalles(id));
 
-        // Cargar el historial con sus fechas originales.
+        // Carga el historial de estados del pedido.
         pedido.getHistorial().addAll(listarHistorial(id));
 
         return pedido;
     }
 
-    // =========================================================
-    // CONVERTIR FECHAS DE SQLITE
-    // =========================================================
-
+    // Convierte diferentes formatos de fecha en un objeto Date.
     private Date convertirFecha(String texto) throws SQLException {
 
+        // Comprueba que la fecha tenga contenido.
         if (texto == null || texto.trim().isEmpty()) {
             throw new SQLException(
                     "La fecha guardada en la base de datos está vacía."
@@ -363,7 +365,7 @@ public class PedidoDAO {
 
         texto = texto.trim();
 
-        // Formato Unix en milisegundos, por ejemplo 1791935898156.
+        // Intenta interpretar la fecha como milisegundos desde Unix.
         try {
             if (texto.matches("-?\\d+")) {
                 return new Date(Long.parseLong(texto));
@@ -374,18 +376,18 @@ public class PedidoDAO {
             );
         }
 
-        // Formato SQL: yyyy-MM-dd HH:mm:ss
+        // Intenta interpretar el formato SQL habitual.
         try {
             return Timestamp.valueOf(texto);
         } catch (IllegalArgumentException ignored) {
-            // Probar los formatos siguientes.
+            // Si falla, prueba con otros formatos.
         }
 
-        // Formato ISO con zona horaria.
+        // Intenta interpretar una fecha ISO con zona horaria UTC.
         try {
             return Date.from(Instant.parse(texto));
         } catch (Exception ignored) {
-            // Probar formato ISO con offset.
+            // Si falla, prueba el formato ISO con offset.
         }
 
         try {
@@ -393,7 +395,7 @@ public class PedidoDAO {
                     OffsetDateTime.parse(texto).toInstant()
             );
         } catch (Exception ignored) {
-            // Probar fecha y hora ISO sin zona.
+            // Si falla, prueba fecha y hora ISO sin zona horaria.
         }
 
         try {
@@ -401,18 +403,16 @@ public class PedidoDAO {
                     LocalDateTime.parse(texto.replace(' ', 'T'))
             );
         } catch (Exception ignored) {
-            // Ningún formato reconocido.
+            // Ninguno de los formatos anteriores funciono.
         }
 
+        // Informa que la fecha no pudo convertirse.
         throw new SQLException(
                 "No se pudo interpretar la fecha almacenada: " + texto
         );
     }
 
-    // =========================================================
-    // LISTAR DETALLES DEL PEDIDO
-    // =========================================================
-
+    // Consulta los detalles asociados a un pedido.
     public List<DetallePedido> listarDetalles(int idPedido)
             throws SQLException {
 
@@ -426,6 +426,7 @@ public class PedidoDAO {
             ORDER BY id
             """;
 
+        // Permite recuperar los datos de cada producto.
         ProductoDAO productoDAO = new ProductoDAO();
 
         try (Connection conexion = Conexion.conectar();
@@ -435,6 +436,7 @@ public class PedidoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
 
+                // Recorre todos los detalles encontrados.
                 while (rs.next()) {
 
                     int idDetalle = rs.getInt("id");
@@ -444,9 +446,11 @@ public class PedidoDAO {
                             rs.getDouble("precio_unitario");
                     double subtotal = rs.getDouble("subtotal");
 
+                    // Busca el producto asociado a este detalle.
                     Producto producto =
                             productoDAO.buscarPorId(idProducto);
 
+                    // Informa si el producto asociado no existe.
                     if (producto == null) {
                         throw new SQLException(
                                 "No se encontró el producto con ID "
@@ -454,6 +458,7 @@ public class PedidoDAO {
                         );
                     }
 
+                    // Construye el detalle con sus datos recuperados.
                     DetallePedido detalle = new DetallePedido(
                             idDetalle,
                             producto,
@@ -470,10 +475,7 @@ public class PedidoDAO {
         return detalles;
     }
 
-    // =========================================================
-    // LISTAR HISTORIAL CONSERVANDO FECHA Y HORA
-    // =========================================================
-
+    // Recupera el historial de cambios de estado de un pedido.
     public List<HistorialEstado> listarHistorial(int idPedido)
             throws SQLException {
 
@@ -493,12 +495,14 @@ public class PedidoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
 
+                // Recorre los registros del historial.
                 while (rs.next()) {
 
                     int idHistorial = rs.getInt("id");
                     String estado = rs.getString("estado");
                     String fechaTexto = rs.getString("fecha_hora");
 
+                    // Convierte la fecha para conservarla en el objeto.
                     Date fechaHora = convertirFecha(fechaTexto);
 
                     HistorialEstado registro = new HistorialEstado(
@@ -515,23 +519,22 @@ public class PedidoDAO {
         return historial;
     }
 
-    // =========================================================
-    // ACTUALIZAR ESTADO Y REGISTRAR EL CAMBIO
-    // =========================================================
-
+    // Actualiza el estado del pedido y registra el cambio en el historial.
     public boolean actualizarEstado(int id, String nuevoEstado)
             throws SQLException {
 
+        // Rechaza un estado nulo.
         if (nuevoEstado == null) {
             return false;
         }
 
-        // Acepta "En preparacion", "en preparación", "EN_PREPARACION", etc.
+        // Normaliza el texto para aceptar variaciones de mayusculas y tildes.
         nuevoEstado = Normalizer.normalize(nuevoEstado.trim(), Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "")
                 .toUpperCase()
                 .replaceAll("\\s+", "_");
 
+        // Solo permite los estados definidos para los pedidos.
         if (!nuevoEstado.equals("PENDIENTE")
                 && !nuevoEstado.equals("EN_PREPARACION")
                 && !nuevoEstado.equals("LISTO")
@@ -554,6 +557,7 @@ public class PedidoDAO {
 
         try (Connection conexion = Conexion.conectar()) {
 
+            // Agrupa la actualizacion, el historial y el estado de la mesa.
             conexion.setAutoCommit(false);
 
             try {
@@ -561,7 +565,7 @@ public class PedidoDAO {
                 String estadoActual;
                 int idMesa;
 
-                // Verificar que el pedido exista y leer su estado.
+                // Comprueba que el pedido exista y recupera su estado actual.
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sqlBuscar)) {
 
@@ -579,20 +583,20 @@ public class PedidoDAO {
                     }
                 }
 
-                // No permitir cancelar un pedido ya entregado.
+                // No permite cancelar un pedido que ya fue entregado.
                 if ("ENTREGADO".equals(estadoActual)
                         && "CANCELADO".equals(nuevoEstado)) {
                     conexion.rollback();
                     return false;
                 }
 
-                // Si el estado no cambia, no duplicar el historial.
+                // Evita registrar dos veces el mismo estado consecutivo.
                 if (nuevoEstado.equals(estadoActual)) {
                     conexion.rollback();
                     return true;
                 }
 
-                // Actualizar estado del pedido.
+                // Actualiza el estado del pedido.
                 try (PreparedStatement ps =
                         conexion.prepareStatement(sqlActualizar)) {
 
@@ -605,7 +609,7 @@ public class PedidoDAO {
                     }
                 }
 
-                // Registrar la fecha exacta del cambio.
+                // Guarda la fecha exacta en que se realizó el cambio.
                 String fechaActual =
                         String.valueOf(System.currentTimeMillis());
 
@@ -619,7 +623,7 @@ public class PedidoDAO {
                     ps.executeUpdate();
                 }
 
-                // Pedido terminado: liberar la mesa. Pedido reactivado: ocuparla.
+                // Libera la mesa si el pedido termina; de lo contrario, la ocupa.
                 boolean terminado = nuevoEstado.equals("ENTREGADO")
                         || nuevoEstado.equals("CANCELADO");
 
@@ -630,25 +634,24 @@ public class PedidoDAO {
                     ps.executeUpdate();
                 }
 
+                // Confirma todas las operaciones realizadas.
                 conexion.commit();
                 return true;
 
             } catch (SQLException | RuntimeException e) {
 
+                // Revierte todos los cambios si ocurre un error.
                 conexion.rollback();
                 throw e;
 
             } finally {
+                // Restaura el modo normal de la conexion.
                 conexion.setAutoCommit(true);
             }
         }
     }
 
-
-    // =========================================================
-    // ACTUALIZAR DATOS GENERALES (mesero, mesa y total)
-    // =========================================================
-
+    // Actualiza el mesero, la mesa y el total de un pedido existente.
     public boolean actualizar(Pedido pedido) throws SQLException {
 
         String sql = """
@@ -665,11 +668,12 @@ public class PedidoDAO {
             ps.setDouble(3, pedido.getTotal());
             ps.setInt(4, pedido.getId());
 
+            // Devuelve true si se actualizo algun registro.
             return ps.executeUpdate() > 0;
         }
     }
 
-    // Sirve para recalcular el total despues de cambiar los detalles.
+    // Actualiza el total de un pedido después de modificar sus detalles.
     public boolean actualizarTotal(int id, double total) throws SQLException {
 
         String sql = "UPDATE pedido SET total = ? WHERE id = ?";
@@ -684,10 +688,7 @@ public class PedidoDAO {
         }
     }
 
-    // =========================================================
-    // ELIMINAR PEDIDO CON SUS DETALLES E HISTORIAL
-    // =========================================================
-
+    // Elimina el pedido, sus detalles y su historial en una transaccion.
     public boolean eliminar(int id) throws SQLException {
 
         try (Connection conexion = Conexion.conectar()) {
@@ -698,6 +699,7 @@ public class PedidoDAO {
                 String estado;
                 int idMesa;
 
+                // Consulta el estado y la mesa antes de borrar el pedido.
                 try (PreparedStatement ps = conexion.prepareStatement(
                         "SELECT estado, mesa_id FROM pedido WHERE id = ?")) {
 
@@ -713,6 +715,7 @@ public class PedidoDAO {
                     }
                 }
 
+                // Borra primero los registros relacionados con el pedido.
                 borrarPorId(conexion,
                         "DELETE FROM detalle_pedido WHERE pedido_id = ?", id);
                 borrarPorId(conexion,
@@ -720,7 +723,7 @@ public class PedidoDAO {
                 borrarPorId(conexion,
                         "DELETE FROM pedido WHERE id = ?", id);
 
-                // Si el pedido seguia activo, la mesa queda disponible.
+                // Si el pedido estaba activo, libera la mesa.
                 if (!"ENTREGADO".equals(estado)
                         && !"CANCELADO".equals(estado)) {
 
@@ -737,6 +740,7 @@ public class PedidoDAO {
 
             } catch (SQLException | RuntimeException e) {
 
+                // Revierte las eliminaciones si alguna operacion falla.
                 conexion.rollback();
                 throw e;
 
@@ -746,6 +750,7 @@ public class PedidoDAO {
         }
     }
 
+    // Ejecuta una instruccion de borrado usando una conexion existente.
     private void borrarPorId(Connection conexion, String sql, int id)
             throws SQLException {
 
@@ -755,10 +760,7 @@ public class PedidoDAO {
         }
     }
 
-    // =========================================================
-    // CONSULTAS PARA COCINA Y REPORTES
-    // =========================================================
-
+    // Consulta los pedidos que tienen un estado determinado.
     public List<Pedido> listarPorEstado(String estado) throws SQLException {
 
         List<Pedido> pedidos = new ArrayList<>();
@@ -768,9 +770,11 @@ public class PedidoDAO {
         try (Connection conexion = Conexion.conectar();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
+            // Normaliza el estado antes de ejecutar la consulta.
             ps.setString(1, estado.trim().toUpperCase());
 
             try (ResultSet rs = ps.executeQuery()) {
+                // Convierte cada resultado en un objeto Pedido.
                 while (rs.next()) {
                     pedidos.add(convertirPedido(rs));
                 }
@@ -780,6 +784,7 @@ public class PedidoDAO {
         return pedidos;
     }
 
+    // Lista los pedidos cuya fecha se encuentra dentro del rango indicado.
     public List<Pedido> listarPorRango(Date inicio, Date fin)
             throws SQLException {
 
@@ -794,6 +799,7 @@ public class PedidoDAO {
         try (Connection conexion = Conexion.conectar();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
+            // Define la fecha inicial y final en milisegundos.
             ps.setLong(1, inicio.getTime());
             ps.setLong(2, fin.getTime());
 
@@ -807,7 +813,7 @@ public class PedidoDAO {
         return pedidos;
     }
 
-    // Suma de los pedidos ENTREGADOS dentro del rango de fechas.
+    // Calcula las ventas sumando los pedidos entregados dentro del rango.
     public double totalVentas(Date inicio, Date fin) throws SQLException {
 
         String sql = """
@@ -824,6 +830,7 @@ public class PedidoDAO {
             ps.setLong(2, fin.getTime());
 
             try (ResultSet rs = ps.executeQuery()) {
+                // Devuelve la suma de ventas o cero si no hay resultados.
                 return rs.next() ? rs.getDouble("ventas") : 0;
             }
         }
