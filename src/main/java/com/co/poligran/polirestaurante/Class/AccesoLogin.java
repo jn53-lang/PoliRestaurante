@@ -1,16 +1,16 @@
-package com.co.poligran.polirestaurante.Front;
+package com.co.poligran.polirestaurante.Class;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
 
 /**
  * Funcionalidad 1 del AdminManager: acceso (inicio de sesion y registro).
  */
-public class PantallaAcceso {
+public class AccesoLogin {
 
     private AdminManager admin;
 
-    public PantallaAcceso(AdminManager admin) {
+    public AccesoLogin(AdminManager admin) {
         this.admin = admin;
     }
 

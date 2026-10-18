@@ -1,6 +1,6 @@
 package com.co.poligran.polirestaurante.Test;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Entityes.Categoria;
 import com.co.poligran.polirestaurante.Entityes.Mesa;
 import com.co.poligran.polirestaurante.Entityes.Producto;

@@ -1,7 +1,7 @@
-package com.co.poligran.polirestaurante.Front;
+package com.co.poligran.polirestaurante.Class;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
-import com.co.poligran.polirestaurante.BackEnd.PedidoManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
+import com.co.poligran.polirestaurante.Managers.PedidoManager;
 import com.co.poligran.polirestaurante.Entityes.DetallePedido;
 import com.co.poligran.polirestaurante.Entityes.HistorialEstado;
 import com.co.poligran.polirestaurante.Entityes.Mesa;
@@ -16,12 +16,12 @@ import java.util.List;
  * de consulta (que tambien usa el administrador). Todas llaman al PedidoManager.
  * El AdminManager solo se usa para mostrar las mesas y los productos disponibles.
  */
-public class PantallaPedidos {
+public class MenuPedidos {
 
     private PedidoManager pedidos;
     private AdminManager admin;
 
-    public PantallaPedidos(PedidoManager pedidos, AdminManager admin) {
+    public MenuPedidos(PedidoManager pedidos, AdminManager admin) {
         this.pedidos = pedidos;
         this.admin = admin;
     }

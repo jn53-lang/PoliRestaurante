@@ -1,4 +1,4 @@
-package com.co.poligran.polirestaurante.BackEnd;
+package com.co.poligran.polirestaurante.Managers;
 
 import com.co.poligran.polirestaurante.Entityes.Administrador;
 import com.co.poligran.polirestaurante.Entityes.Categoria;

@@ -1,6 +1,6 @@
-package com.co.poligran.polirestaurante.Front;
+package com.co.poligran.polirestaurante.Class;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Entityes.Categoria;
 import com.co.poligran.polirestaurante.Entityes.Mesa;
 import com.co.poligran.polirestaurante.Entityes.Producto;
@@ -11,13 +11,13 @@ import com.co.poligran.polirestaurante.Entityes.Usuario;
  * del AdminManager. La pantalla solo pide datos y muestra mensajes:
  * las validaciones y la base de datos las maneja el Manager.
  */
-public class PantallaAdmin {
+public class MenuAdmin {
 
     private AdminManager admin;
-    private PantallaPedidos pantallaPedidos;
+    private MenuPedidos pantallaPedidos;
     private Usuario actual;   // administrador que inicio sesion
 
-    public PantallaAdmin(AdminManager admin, PantallaPedidos pantallaPedidos, Usuario actual) {
+    public MenuAdmin(AdminManager admin, MenuPedidos pantallaPedidos, Usuario actual) {
         this.admin = admin;
         this.pantallaPedidos = pantallaPedidos;
         this.actual = actual;

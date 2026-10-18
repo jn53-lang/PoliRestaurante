@@ -1,4 +1,4 @@
-package com.co.poligran.polirestaurante.BackEnd;
+package com.co.poligran.polirestaurante.Managers;
 
 /**
  * Resultado de una operacion del Manager.

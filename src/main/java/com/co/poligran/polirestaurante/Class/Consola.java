@@ -1,4 +1,4 @@
-package com.co.poligran.polirestaurante.Front;
+package com.co.poligran.polirestaurante.Class;
 
 import java.util.Scanner;
 

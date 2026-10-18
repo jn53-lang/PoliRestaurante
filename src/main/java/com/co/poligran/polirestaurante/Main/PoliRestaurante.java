@@ -1,14 +1,14 @@
 package com.co.poligran.polirestaurante.Main;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
-import com.co.poligran.polirestaurante.BackEnd.PedidoManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
+import com.co.poligran.polirestaurante.Managers.PedidoManager;
 import com.co.poligran.polirestaurante.Entityes.Administrador;
 import com.co.poligran.polirestaurante.Entityes.Cocina;
 import com.co.poligran.polirestaurante.Entityes.Mesero;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
-import com.co.poligran.polirestaurante.Front.PantallaAcceso;
-import com.co.poligran.polirestaurante.Front.PantallaAdmin;
-import com.co.poligran.polirestaurante.Front.PantallaPedidos;
+import com.co.poligran.polirestaurante.Class.AccesoLogin;
+import com.co.poligran.polirestaurante.Class.MenuAdmin;
+import com.co.poligran.polirestaurante.Class.MenuPedidos;
 
 public class PoliRestaurante {
 
@@ -19,8 +19,8 @@ public class PoliRestaurante {
         PedidoManager pedidoManager = new PedidoManager();
 
         // 2. Se crean las pantallas que usan esos Managers.
-        PantallaAcceso acceso = new PantallaAcceso(adminManager);
-        PantallaPedidos pantallaPedidos = new PantallaPedidos(pedidoManager, adminManager);
+        AccesoLogin acceso = new AccesoLogin(adminManager);
+        MenuPedidos pantallaPedidos = new MenuPedidos(pedidoManager, adminManager);
 
         System.out.println("Bienvenido al Poli Restaurante");
         System.out.println("--------------------------------------------------");
@@ -35,7 +35,7 @@ public class PoliRestaurante {
 
             // Polimorfismo: el tipo de objeto decide que menu se abre.
             if (usuario instanceof Administrador) {
-                new PantallaAdmin(adminManager, pantallaPedidos, usuario).mostrarMenu();
+                new MenuAdmin(adminManager, pantallaPedidos, usuario).mostrarMenu();
             } else if (usuario instanceof Mesero) {
                 pantallaPedidos.menuMesero(usuario);
             } else if (usuario instanceof Cocina) {

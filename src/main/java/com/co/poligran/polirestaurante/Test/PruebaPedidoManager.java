@@ -1,7 +1,7 @@
 package com.co.poligran.polirestaurante.Test;
 
-import com.co.poligran.polirestaurante.BackEnd.AdminManager;
-import com.co.poligran.polirestaurante.BackEnd.PedidoManager;
+import com.co.poligran.polirestaurante.Managers.AdminManager;
+import com.co.poligran.polirestaurante.Managers.PedidoManager;
 import com.co.poligran.polirestaurante.Entityes.DetallePedido;
 import com.co.poligran.polirestaurante.Entityes.HistorialEstado;
 import com.co.poligran.polirestaurante.Entityes.Mesa;
