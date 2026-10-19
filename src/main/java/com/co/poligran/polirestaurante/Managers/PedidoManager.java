@@ -27,8 +27,6 @@ import java.util.List;
  *   4. Cambiar estado
  *   5. Historial de estados
  *
- * Las operaciones que modifican datos devuelven un mensaje (String).
- * Las consultas devuelven los objetos, o una lista vacia / null si hay error.
  */
 public class PedidoManager {
 

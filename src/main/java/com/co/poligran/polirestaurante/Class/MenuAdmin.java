@@ -7,8 +7,8 @@ import com.co.poligran.polirestaurante.Entityes.Producto;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
 
 /**
- * Pantallas del Administrador. Cada menu corresponde a una funcionalidad
- * del AdminManager. La pantalla solo pide datos y muestra mensajes:
+ * Menu del Administrador. Cada menu corresponde a una funcionalidad
+ * Solo pide datos y muestra mensajes:
  * las validaciones y la base de datos las maneja el Manager.
  */
 public class MenuAdmin {

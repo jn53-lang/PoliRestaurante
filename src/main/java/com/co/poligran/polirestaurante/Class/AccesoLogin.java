@@ -4,7 +4,7 @@ import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
 
 /**
- * Funcionalidad 1 del AdminManager: acceso (inicio de sesion y registro).
+ * Inicio de Sesion y Registro de usuario.
  */
 public class AccesoLogin {
 
@@ -17,7 +17,7 @@ public class AccesoLogin {
     // Devuelve el usuario que inicio sesion, o null si decide salir.
     public Usuario iniciar() {
 
-        // Si la base de datos esta vacia, el primer usuario debe ser un administrador.
+        // En dado caso que se borren los datos, se tiene que agregar un administrador de primeras
         if (admin.listarUsuarios().isEmpty()) {
             crearPrimerAdministrador();
         }
@@ -63,7 +63,7 @@ public class AccesoLogin {
     }
 
     // Registro desde el login: solo se permite Mesero o Cocina.
-    // Los administradores los crea otro administrador desde su menu.
+    // Los administradores solo pueden ser creador por otro administrador
     private void crearUsuario() {
         Consola.titulo("CREAR USUARIO");
         String nombre = Consola.leerTexto("Nombre: ");

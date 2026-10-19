@@ -20,14 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manager del Administrador. Sus 5 funcionalidades son:
+ * Manager del Administrador. Sus 5 opciones son:
  *   1. Acceso 
  *   2. Gestion de usuarios
  *   3. Productos
  *   4. Categorias
  *   5. Mesas
- *
- * Las operaciones que modifican datos devuelven un mensaje .
  * Las consultas devuelven los objetos, o una lista vacia / null si hay error.
  */
 public class AdminManager {
@@ -316,7 +314,7 @@ public class AdminManager {
                 return "No existe un producto con ese ID.";
             }
 
-            // Si ya se pidio alguna vez, es mejor dejarlo como no disponible.
+            // Si ya hubo un pedido, es mejor marcarlo como no disponible.
             for (Pedido pedido : pedidoDAO.listarTodos()) {
                 for (DetallePedido detalle : pedido.getDetalles()) {
                     if (detalle.getProducto().getId() == id) {
@@ -554,10 +552,9 @@ public class AdminManager {
     }
 
     // =====================================================
-    // METODOS DE APOYO
+    // Con estos metodos podemos crear los usuarios. Y apoyarnos de el resto de informacion.
     // =====================================================
 
-    // Devuelve el rol con el formato de las clases hijas, o null si no es valido.
     private String normalizarRol(String rol) {
         if (rol == null) {
             return null;
@@ -574,7 +571,7 @@ public class AdminManager {
         return null;
     }
 
-    // Polimorfismo: se crea la clase hija segun el rol.
+    
     private Usuario crearUsuarioSegunRol(int id, String nombre, String correo, String password, String rol) {
         if (rol.equals("Administrador")) {
             return new Administrador(id, nombre, correo, password);

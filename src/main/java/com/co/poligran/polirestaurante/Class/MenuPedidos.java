@@ -12,9 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
- * Pantallas de pedidos. Hay un menu para el mesero, uno para cocina y uno
- * de consulta (que tambien usa el administrador). Todas llaman al PedidoManager.
- * El AdminManager solo se usa para mostrar las mesas y los productos disponibles.
+ * Menu de pedidos. Hay un menu para el mesero, uno para cocina y uno
+ * de consulta (que tambien puede usar el administrador). 
  */
 public class MenuPedidos {
 
@@ -165,7 +164,7 @@ public class MenuPedidos {
     }
 
     // =====================================================
-    // MENU DE CONSULTA (para el administrador)
+    // MENU DE CONSULTA (Lo usa el administrador para tener registro)
     // =====================================================
 
     public void menuConsulta() {
@@ -197,7 +196,7 @@ public class MenuPedidos {
     }
 
     // =====================================================
-    // HISTORIAL (lo usan los tres menus)
+    // HISTORIAL (lo pueden usar todos los menus (usuarios)
     // =====================================================
 
     private void verHistorial() {
