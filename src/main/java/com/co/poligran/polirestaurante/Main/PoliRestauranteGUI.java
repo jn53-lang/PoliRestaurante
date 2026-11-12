@@ -2,7 +2,7 @@ package com.co.poligran.polirestaurante.Main;
 
 import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Vista.Estilo;
-import com.co.poligran.polirestaurante.Vista.VentanaLogin;
+import com.co.poligran.polirestaurante.Vista.VentanaPrincipal;
 import javax.swing.SwingUtilities;
 
 /**
@@ -17,7 +17,7 @@ public class PoliRestauranteGUI {
         // Las ventanas de Swing siempre se crean en el hilo de eventos.
         SwingUtilities.invokeLater(() -> {
             AdminManager admin = new AdminManager();
-            new VentanaLogin(admin).mostrar();
+            new VentanaPrincipal(admin).mostrar();
         });
     }
 }

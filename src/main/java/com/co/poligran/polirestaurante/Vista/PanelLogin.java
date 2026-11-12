@@ -3,7 +3,6 @@ package com.co.poligran.polirestaurante.Vista;
 import com.co.poligran.polirestaurante.Managers.AdminManager;
 import com.co.poligran.polirestaurante.Entityes.Usuario;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,27 +37,8 @@ public class PanelLogin extends JPanel {
         this.alCrearUsuario = alCrearUsuario;
 
         setLayout(new BorderLayout());
-        add(crearEncabezado(), BorderLayout.NORTH);
+        add(Estilo.crearEncabezado("PoliRestaurante", "Sistema de gestión de restaurante"), BorderLayout.NORTH);
         add(crearFormulario(), BorderLayout.CENTER);
-    }
-
-    // Franja roja de arriba con el nombre del restaurante.
-    private JPanel crearEncabezado() {
-        JPanel encabezado = new JPanel(new BorderLayout());
-        encabezado.setBackground(Estilo.COLOR_PRIMARIO);
-        encabezado.setBorder(BorderFactory.createEmptyBorder(28, 20, 28, 20));
-
-        JLabel titulo = new JLabel("PoliRestaurante", SwingConstants.CENTER);
-        titulo.setFont(Estilo.FUENTE_TITULO);
-        titulo.setForeground(Color.WHITE);
-
-        JLabel subtitulo = new JLabel("Sistema de gestión de restaurante", SwingConstants.CENTER);
-        subtitulo.setFont(Estilo.FUENTE_NORMAL);
-        subtitulo.setForeground(new Color(0xFA, 0xD7, 0xD2));
-
-        encabezado.add(titulo, BorderLayout.CENTER);
-        encabezado.add(subtitulo, BorderLayout.SOUTH);
-        return encabezado;
     }
 
     private JPanel crearFormulario() {

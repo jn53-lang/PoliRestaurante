@@ -3,28 +3,26 @@ package com.co.poligran.polirestaurante.Vista;
 import com.co.poligran.polirestaurante.Managers.AdminManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
- * Ventana para crear un usuario. Si es el primer uso del programa
- * (no hay usuarios), solo permite crear un Administrador.
- * En los demas casos solo se pueden crear Mesero o Cocina; los
+ * Panel para crear un usuario (reemplaza al antiguo cuadro de dialogo).
+ * Si es el primer uso del programa (no hay usuarios) solo permite crear
+ * un Administrador. En los demas casos solo Mesero o Cocina; los
  * administradores nuevos los crea otro administrador desde su menu.
  */
-public class DialogoRegistro extends JDialog {
+public class PanelRegistro extends JPanel {
 
     private AdminManager admin;
+    private Runnable alTerminar;   // que hacer al crear el usuario o al volver
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
@@ -32,9 +30,9 @@ public class DialogoRegistro extends JDialog {
     private JPasswordField txtConfirmacion;
     private JComboBox<String> cmbRol;
 
-    public DialogoRegistro(Frame padre, AdminManager admin, boolean primerAdministrador) {
-        super(padre, primerAdministrador ? "Crear el primer administrador" : "Crear usuario", true);
+    public PanelRegistro(AdminManager admin, boolean primerAdministrador, Runnable alTerminar) {
         this.admin = admin;
+        this.alTerminar = alTerminar;
 
         txtNombre = Estilo.crearCampo();
         txtCorreo = Estilo.crearCampo();
@@ -48,21 +46,20 @@ public class DialogoRegistro extends JDialog {
         }
         cmbRol.setFont(Estilo.FUENTE_NORMAL);
 
-        JPanel contenido = new JPanel(new BorderLayout());
-        contenido.setBackground(Estilo.COLOR_FONDO);
-        contenido.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        contenido.add(crearFormulario(), BorderLayout.CENTER);
-        contenido.add(crearBotones(), BorderLayout.SOUTH);
+        String titulo = primerAdministrador ? "Primer administrador" : "Crear usuario";
+        String subtitulo = primerAdministrador
+                ? "Aún no hay usuarios: cree el administrador"
+                : "Complete los datos de la cuenta";
 
-        setContentPane(contenido);
-        pack();
-        setResizable(false);
-        setLocationRelativeTo(padre);
+        setLayout(new BorderLayout());
+        add(Estilo.crearEncabezado(titulo, subtitulo), BorderLayout.NORTH);
+        add(crearFormulario(primerAdministrador), BorderLayout.CENTER);
     }
 
-    private JPanel crearFormulario() {
+    private JPanel crearFormulario(boolean primerAdministrador) {
         JPanel formulario = new JPanel(new GridBagLayout());
-        formulario.setOpaque(false);
+        formulario.setBackground(Estilo.COLOR_FONDO);
+        formulario.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
         String[] etiquetas = {"Nombre", "Correo", "Contraseña (mínimo 6 caracteres)", "Confirmar contraseña", "Rol"};
         Component[] campos = {txtNombre, txtCorreo, txtPassword, txtConfirmacion, cmbRol};
@@ -78,26 +75,28 @@ public class DialogoRegistro extends JDialog {
             formulario.add(Estilo.crearEtiqueta(etiquetas[i]), gbc);
 
             gbc.gridy = i * 2 + 1;
-            gbc.insets = new Insets(0, 0, 12, 0);
+            gbc.insets = new Insets(0, 0, 10, 0);
             formulario.add(campos[i], gbc);
         }
 
-        return formulario;
-    }
-
-    private JPanel crearBotones() {
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        botones.setOpaque(false);
-
-        JButton btnCancelar = Estilo.crearBoton("Cancelar", Estilo.COLOR_SECUNDARIO);
-        JButton btnCrear = Estilo.crearBoton("Crear", Estilo.COLOR_PRIMARIO);
-
-        btnCancelar.addActionListener(e -> dispose());
+        JButton btnCrear = Estilo.crearBoton("Crear usuario", Estilo.COLOR_PRIMARIO);
         btnCrear.addActionListener(e -> crearUsuario());
 
-        botones.add(btnCancelar);
-        botones.add(btnCrear);
-        return botones;
+        gbc.gridy = etiquetas.length * 2;
+        gbc.insets = new Insets(10, 0, 8, 0);
+        formulario.add(btnCrear, gbc);
+
+        // En el primer uso no se puede volver: hay que crear el administrador.
+        if (!primerAdministrador) {
+            JButton btnVolver = Estilo.crearBoton("Volver", Estilo.COLOR_SECUNDARIO);
+            btnVolver.addActionListener(e -> alTerminar.run());
+
+            gbc.gridy = etiquetas.length * 2 + 1;
+            gbc.insets = new Insets(0, 0, 0, 0);
+            formulario.add(btnVolver, gbc);
+        }
+
+        return formulario;
     }
 
     private void crearUsuario() {
@@ -116,7 +115,7 @@ public class DialogoRegistro extends JDialog {
 
         if (mensaje.startsWith("Usuario creado")) {
             Estilo.info(this, mensaje);
-            dispose();
+            alTerminar.run();
         } else {
             Estilo.error(this, mensaje);
         }
