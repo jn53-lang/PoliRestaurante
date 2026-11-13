@@ -57,10 +57,10 @@ public class PanelAdmin extends JPanel {
     private void crearSecciones() {
         contenido.setBackground(Estilo.COLOR_FONDO);
 
-        contenido.add(new PanelPlaceholder("Gestión de usuarios", "Este panel se agrega en la Parte 3."), "Usuarios");
-        contenido.add(new PanelPlaceholder("Productos", "Este panel se agrega en la Parte 4."), "Productos");
-        contenido.add(new PanelPlaceholder("Categorías", "Este panel se agrega en la Parte 5."), "Categorías");
-        contenido.add(new PanelPlaceholder("Mesas", "Este panel se agrega en la Parte 6."), "Mesas");
+        contenido.add(new Bordes("Gestión de usuarios", "Este panel se agrega en la Parte 3."), "Usuarios");
+        contenido.add(new Bordes("Productos", "Este panel se agrega en la Parte 4."), "Productos");
+        contenido.add(new Bordes("Categorías", "Este panel se agrega en la Parte 5."), "Categorías");
+        contenido.add(new Bordes("Mesas", "Este panel se agrega en la Parte 6."), "Mesas");
     }
 
     private JPanel crearBarraLateral(Runnable alCerrarSesion) {

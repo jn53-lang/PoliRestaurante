@@ -10,9 +10,9 @@ import javax.swing.SwingConstants;
  * Panel de relleno para las secciones que todavia no se han construido.
  * En cada parte siguiente se reemplaza por el panel real.
  */
-public class PanelPlaceholder extends JPanel {
+public class Bordes extends JPanel {
 
-    public PanelPlaceholder(String titulo, String detalle) {
+    public Bordes(String titulo, String detalle) {
         setLayout(new BorderLayout());
         setBackground(Estilo.COLOR_FONDO);
         setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
